@@ -1,15 +1,32 @@
-<div class="todo-container">
-    <h1>Todo List</h1>
+<div class="body">
+  <form [formGroup]="todoFormGroup">
+    <div formArrayName="tasks">
+      <div *ngFor="let task of tasks.controls; let i = index" [formGroupName]="i">
+        <div class="card mb-1 ml-3 mr-3">
+          <div class="card-header text-center"><span><b>Add Task</b></span></div>
+          <div class="card-content">
+            <div class="row">
+              <div class="col-xl-12 col-lg-12 col-md-12 col-12">
+                <div class="form-group">
+                  <p><b>Select Task</b></p>
+                  <select formControlName="task_id" class="form-control">
+                    <option>--Select</option>
+                    <option [value]="task.id" *ngFor="let task of taskList">{{task.id}}</option>
+                  </select>
+                </div>
   
-    <input [(ngModel)]="newTask" placeholder="Enter a new task" />
-    <button (click)="addTask()">Add Task</button>
-  
-    <ul>
-      <li *ngFor="let todo of todoList">
-        <input type="checkbox" [checked]="todo.completed" (change)="toggleTaskCompletion(todo)" />
-        <span [class.completed]="todo.completed">{{ todo.task }}</span>
-        <button (click)="deleteTask(todo.id)">Delete</button>
-      </li>
-    </ul>
-  </div>
-  
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+
+      </div>
+      <div class="btn">
+        <button type="button" class="btn btn-primary" (click)="addTask()">Add</button>
+      </div>
+    </div>
+  </form>
+
+</div>
