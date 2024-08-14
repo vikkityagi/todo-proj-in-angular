@@ -1,0 +1,41 @@
+/* .todo-container {
+    width: 300px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  input {
+    padding: 5px;
+    margin: 10px 0;
+    width: 80%;
+  }
+  
+  button {
+    margin-left: 10px;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+  }
+  
+  .completed {
+    text-decoration: line-through;
+  }
+   */
+
+.body {
+    background-image: url('/assets/images/todobg.jpeg');
+    background-size: cover; /* Ensures the background covers the entire area */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-position: center center; /* Centers the image */
+    height: 100vh; /* Ensures the background covers the full height of the viewport */
+    margin: 0; /* Removes any default margin */
+}
