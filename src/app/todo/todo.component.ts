@@ -7,7 +7,7 @@ interface Todo {
   task: string;
   completed: boolean;
 }
-
+declare var $: any;
 @Component({
   selector: 'app-todo',
   standalone: true,
@@ -56,6 +56,15 @@ export class TodoComponent implements OnInit {
 
   }
 
+
+  openModal() {
+    $('#myModal').modal('show');
+    
+  }
+
+  closeModal() {
+    $('#myModal').modal('hide');
+  }
 
 
 
