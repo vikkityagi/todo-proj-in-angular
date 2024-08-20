@@ -1,54 +1,137 @@
 <!-- Button trigger modal -->
 <div class="container">
-  <button type="button" class="btn btn-primary" (click)="openModal()">Open Modal</button>
-
-  <!-- Modal -->
- 
-
-<div class="modal fade" id="myModal" role="dialog">
-  <div class="modal-dialog">
-  
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add Task</h4>
-      </div>
-      <div class="modal-body">
-        <form [formGroup]="todoFormGroup">
-          <div formArrayName="tasks">
-            <div *ngFor="let task of tasks.controls; let i = index" [formGroupName]="i">
-              <div class="card mb-1 ml-3 mr-3">
-                <div class="card-header text-center"><span><b>Add Task</b></span></div>
-                <div class="card-content">
-                  <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-12">
-                      <div class="form-group">
-                        <p><b>Select Task</b></p>
-                        <select formControlName="task_id" class="form-control">
-                          <option>--Select</option>
-                          <option [value]="task.id" *ngFor="let task of taskList">{{task.id}}</option>
-                        </select>
-                      </div>
-
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-
-            </div>
-            <div class="btn">
-              <button type="button" class="btn btn-primary" (click)="addTask()">Add</button>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="closeModal()">Close</button>
+  <div class="row mt-3">
+    <div class="col-lg-10 col-md-10 col-10">
+      <div class="card">
+        <div class="card-header"></div>
+        <div class="card-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Task Name</th>
+                <th>Progress</th>
+                <th>Date</th>
+                <th>How much time did you spend</th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    
+    <div class="col-xl-2 col-md-2 col-2">
+      <button type="button" class="btn btn-primary float-end" (click)="openModal()">Add Task</button>
+    </div>
   </div>
-</div>
+
+  <!-- Modal -->
+
+
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog custom-width">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"  >Add Task</h4>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="todoFormGroup">
+            <div formArrayName="tasks">
+              <div *ngFor="let task of tasks.controls; let i = index" [formGroupName]="i">
+                <div class="card mb-1 ml-3 mr-3">
+                  <div class="card-header text-center" #taskno><span><b>Add Task</b></span></div>
+                  <div class="card-body m-3">
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-xl-1 col-lg-1 col-md-12 col-12">
+                          <p><b>Select Task</b></p>
+                        </div>
+                        <div class="col-xl-11 col-lg-11 col-md-12 col-12">
+                          <select formControlName="task_id" class="form-control">
+                            @for(task of taskList ; track task.id){
+                            <option>{{task.name}}</option>
+                            }@empty {
+                            <option>There are no items.</option>
+                            }
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group mt-2">
+                      <div class="row">
+                        <div class="col-xl-1 col-lg-1 col-md-12 col-12">
+                          <p><b>Select One</b></p>
+                        </div>
+                        <div class="col-xl-11 col-lg-11 col-md-12 col-12">
+                          <div>
+                            <input type="radio" formControlName="progress" value="1" (change)="onProgress($event)">&nbsp;&nbsp;Completed
+                            <input type="radio" formControlName="progress" value="2" (change)="onProgress($event)">&nbsp;&nbsp;Not Start
+                            <input type="radio" formControlName="progress" value="3" (change)="onProgress($event)">&nbsp;&nbsp;Partial
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="form-group mt-2">
+                      <div class="row">
+                        <div class="col-xl-1 col-lg-1 col-md-12 col-12">
+                          <label for="datepicker"><b>Choose a Date</b></label>
+                        </div>
+                        <div class="col-xl-11 col-lg-11 col-md-12 col-12">
+                          <div>
+                            <input type="date" class="form-control" id="datepicker" formControlName="date">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="form-group mt-2">
+                      <div class="row">
+                        <div class="col-xl-1 col-lg-1 col-md-1 col-12">
+                          <label for="timepicker"><b>Start Time</b></label>
+                        </div>
+                        <div class="col-xl-11 col-lg-11 col-md-11 col-12">
+                          <div>
+                            <input type="time" class="form-control" id="timepicker"  formControlName="start_time" >
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="form-group mt-2">
+                      <div class="row">
+                        <div class="col-xl-1 col-lg-1 col-md-12 col-12">
+                          <label for="timepicker"><b>End Time</b></label>
+                        </div>
+                        <div class="col-xl-11 col-lg-11 col-md-12 col-12">
+                          <div>
+                            <input type="time" class="form-control" id="timepicker" formControlName="end_time">
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+              <div class="btn">
+                <button type="button" class="btn btn-primary" (click)="addTask()" >Add</button>
+              </div>
+            </div>
+            <div class="btn-group text-center float-end">
+              <button type="reset" class="btn btn-success">Reset</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="closeModal()">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
