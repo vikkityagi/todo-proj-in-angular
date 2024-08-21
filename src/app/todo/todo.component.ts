@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskService } from '../task.service';
+import { map, Observable, Subject, tap } from 'rxjs';
 
 interface Todo {
   id: number;
@@ -13,95 +14,147 @@ declare var $: any;
   selector: 'app-todo',
   standalone: true,
   imports: [FormsModule, CommonModule, ReactiveFormsModule],
-  providers:[TaskService],
+  providers: [TaskService],
   templateUrl: './todo.component.html',
   styleUrl: './todo.component.css'
 })
 export class TodoComponent implements OnInit {
-
-  todoFormGroup: any = FormGroup;
+  todoFormGroup: FormGroup;
   taskList: any[] = [
     { id: 1, name: 'English Practice' },
     { id: 2, name: 'Exercise' },
     { id: 3, name: 'Learn new Skill' },
-    { id: 4, name: 'Start Buisness' },
+    { id: 4, name: 'Start Business' },
     { id: 5, name: 'Read a book' }
   ];
-  isInputEnabled:boolean =  true;
-  alertMessage:any;
-  tasks$ = this.taskService.getTasks();
+  alertMessage: any;
+  tasks$!: Observable<any[]>; // Observable for tasks
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  totalTasks: number = 0;
+  private submitSubject = new Subject<void>();
 
-
-  constructor(private _fb: FormBuilder,private taskService: TaskService) {
+  constructor(private _fb: FormBuilder, private taskService: TaskService) {
     this.todoFormGroup = this._fb.group({
       tasks: this._fb.array([])
-    })
+    });
   }
-
-
 
   ngOnInit(): void {
+    this.loadTasks();
     this.addTask();
   }
-
-
 
   get tasks() {
     return this.todoFormGroup.get('tasks') as FormArray;
   }
 
-  addTask() {
-
-    if(this.tasks.length < 5 ){
-      const task = this._fb.group({
-        task_id: [,[Validators.required]],
-        progress:[,[Validators.required]],
-        date:[,[Validators.required]],
-        start_time:[{ value: '', disabled: true },[Validators.required]],
-        end_time:[{ value: '', disabled: true },[Validators.required]]
-      })
-
-      // this is for enable the end time after start time has any value
-      task.get('start_time')?.valueChanges.subscribe(data=>{
-        if(data!=""){
-          task.get('end_time')?.enable();
-        }else{
-          task.get('end_time')?.disable();
-        }
-      })
-
-      
-  
-      this.tasks.push(task);
-    }
-
-    
-    
-
+  loadTasks() {
+    this.tasks$ = this.taskService.getTasks().pipe(
+      tap(tasks => {
+        this.totalTasks = tasks.length; // Update total tasks
+      }),
+      map(tasks => this.paginateTasks(tasks))
+    );
   }
 
+  paginateTasks(tasks: any[]): any[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return tasks.slice(start, end);
+  }
+
+  totalPagesArray() {
+    return Array(Math.ceil(this.totalTasks / this.itemsPerPage)).fill(0).map((_, i) => i + 1);
+  }
+
+  setPage(page: number) {
+    this.currentPage = page;
+    this.loadTasks(); // Reload tasks with new page
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.loadTasks(); // Reload tasks with new page
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < Math.ceil(this.totalTasks / this.itemsPerPage)) {
+      this.currentPage++;
+      this.loadTasks(); // Reload tasks with new page
+    }
+  }
+
+  addTask() {
+    if (this.tasks.length < 5) {
+      const task = this._fb.group({
+        task_id: [, [Validators.required]],
+        progress: [, [Validators.required]],
+        date: [, [Validators.required]],
+        start_time: [{ value: '', disabled: true }, [Validators.required]],
+        end_time: [{ value: '', disabled: true }, [Validators.required]]
+      });
+
+      task.get('start_time')?.valueChanges.subscribe(data => {
+        if (data) {
+          task.get('end_time')?.enable();
+        } else {
+          task.get('end_time')?.disable();
+        }
+      });
+
+      this.tasks.push(task);
+    }
+  }
 
   openModal() {
     $('#myModal').modal('show');
-    
   }
 
   closeModal() {
     $('#myModal').modal('hide');
   }
 
-  // this is for to enable or disable the start time acc
-  onProgress(event: any){
-    const task = this.tasks.at(this.tasks.length-1) as FormGroup;
-    const progress = this.tasks.at(this.tasks.length-1) as FormGroup;
-    if(progress.get('progress')?.value != 2){
-      task.get('start_time')?.enable();
-    }else{
+  // onProgress(event: any) {
+  //   const task = this.tasks.at(this.tasks.length - 1) as FormGroup;
+  //   if (task.get('progress')?.value != 2) {
+  //     task.get('start_time')?.setValidators([Validators.required]);
+  //     task.get('end_time')?.setValidators([Validators.required]);
+  //     task.get('start_time')?.enable();
+  //   } else {
+  //     task.get('start_time')?.clearValidators();
+  //     task.get('end_time')?.clearValidators();
+  //     task.get('start_time')?.disable();
+  //   }
+  //   task.get('start_time')?.updateValueAndValidity();
+  //   task.get('end_time')?.updateValueAndValidity();
+  // }
+
+  onProgress(event: any) {
+    const task = this.tasks.at(this.tasks.length - 1) as FormGroup;
+    const progress = task.get('progress')?.value;
+
+    if (progress == 2) {
+      // When progress is 2, start_time and end_time should not be required
+      task.get('start_time')?.clearValidators();
+      task.get('end_time')?.clearValidators();
       task.get('start_time')?.disable();
+    } else {
+      // When progress is not 2, start_time and end_time should be required
+      task.get('start_time')?.enable();
+      task.get('start_time')?.setValidators([Validators.required]);
+      task.get('end_time')?.setValidators([Validators.required]);
     }
+
+    // Update the form validation status
+    task.get('start_time')?.updateValueAndValidity();
+    task.get('end_time')?.updateValueAndValidity();
   }
 
-  removeTask(index: number){
+
+  removeTask(index: number) {
     this.tasks.removeAt(index);
   }
 
@@ -111,6 +164,7 @@ export class TodoComponent implements OnInit {
         next: data => {
           this.showAlert('success', 'Tasks submitted successfully!');
           this.todoFormGroup.reset();
+          this.loadTasks(); // Refresh task list
         },
         error: err => {
           this.showAlert('danger', 'There was an error submitting the tasks.');
@@ -129,8 +183,4 @@ export class TodoComponent implements OnInit {
       this.alertMessage = null;
     }, 5000);
   }
-
-  
-
-
 }
