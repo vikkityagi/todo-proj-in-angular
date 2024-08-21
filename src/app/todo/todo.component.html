@@ -5,14 +5,30 @@
       <div class="card">
         <div class="card-header"></div>
         <div class="card-body">
-          <table class="table">
-            <tbody>
+          <table class="table table-striped table-bordered table-hover">
+            <thead class="thead-dark">
               <tr>
                 <th>Task Name</th>
                 <th>Progress</th>
                 <th>Date</th>
-                <th>How much time did you spend</th>
+                <th>Time Spent</th>
               </tr>
+            </thead>
+            <tbody>
+              <!-- Example using Angular's async pipe -->
+              <ng-container *ngIf="tasks$ | async as tasks; else noTasks">
+                <tr *ngFor="let task of tasks$ | async">
+                  <td>{{ task.task_name }}</td>
+                  <td>{{ task.progress_name }}</td>
+                  <td>{{ task.date  }}</td>
+                  <td>{{ task.total_time  }}</td>
+                </tr>
+              </ng-container>
+              <ng-template #noTasks>
+                <tr>
+                  <td colspan="4" class="text-center">No tasks available</td>
+                </tr>
+              </ng-template>
             </tbody>
           </table>
         </div>
@@ -36,7 +52,8 @@
           <h4 class="modal-title"  >Add Task</h4>
         </div>
         <div class="modal-body">
-          <form [formGroup]="todoFormGroup">
+          <div *ngIf="alertMessage" class="alert alert-{{alertMessage.type}}" role="alert">{{alertMessage.message }}</div>
+          <form [formGroup]="todoFormGroup" (ngSubmit)="onSubmit()">
             <div formArrayName="tasks">
               <div *ngFor="let task of tasks.controls; let i = index" [formGroupName]="i">
                 <div class="card mb-1 ml-3 mr-3">
@@ -50,7 +67,7 @@
                         <div class="col-xl-11 col-lg-11 col-md-12 col-12">
                           <select formControlName="task_id" class="form-control">
                             @for(task of taskList ; track task.id){
-                            <option>{{task.name}}</option>
+                            <option [value]="task.id">{{task.name}}</option>
                             }@empty {
                             <option>There are no items.</option>
                             }
@@ -113,8 +130,8 @@
                       </div>
                     </div>
                   </div>
+                  <button type="button" class="btn btn-danger float-end m-2" (click)="removeTask(i)" [ngStyle]="{'width': '88px'}" >Remove</button>
                 </div>
-
 
               </div>
               <div class="btn">

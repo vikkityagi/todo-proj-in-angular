@@ -1,3 +1,29 @@
 .custom-width {
     max-width: 80%; /* Adjust this value as needed */
   }
+
+  /* Additional styling for the table */
+.table {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.table th, .table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.thead-dark th {
+  background-color: #343a40;
+  color: #fff;
+}
