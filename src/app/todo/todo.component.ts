@@ -3,6 +3,9 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskService } from '../task.service';
 import { map, Observable, Subject, tap } from 'rxjs';
+import * as Highcharts from 'highcharts';
+import { Chart, ChartModule } from 'angular-highcharts';
+import { DataService } from '../data.service';
 
 interface Todo {
   id: number;
@@ -13,8 +16,8 @@ declare var $: any;
 @Component({
   selector: 'app-todo',
   standalone: true,
-  imports: [FormsModule, CommonModule, ReactiveFormsModule],
-  providers: [TaskService],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, ChartModule],
+  providers: [TaskService, DataService],
   templateUrl: './todo.component.html',
   styleUrl: './todo.component.css'
 })
@@ -32,9 +35,9 @@ export class TodoComponent implements OnInit {
   currentPage: number = 1;
   itemsPerPage: number = 5;
   totalTasks: number = 0;
-  private submitSubject = new Subject<void>();
+  selectedTask: any;
 
-  constructor(private _fb: FormBuilder, private taskService: TaskService) {
+  constructor(private _fb: FormBuilder, private taskService: TaskService,private carDataService: DataService) {
     this.todoFormGroup = this._fb.group({
       tasks: this._fb.array([])
     });
@@ -43,6 +46,8 @@ export class TodoComponent implements OnInit {
   ngOnInit(): void {
     this.loadTasks();
     this.addTask();
+
+    
   }
 
   get tasks() {
@@ -117,6 +122,15 @@ export class TodoComponent implements OnInit {
     $('#myModal').modal('hide');
   }
 
+  openReport(task: any) {
+    this.selectedTask = task;
+    $('#myReport').modal('show');
+  }
+
+  closeReport() {
+    $('#myReport').modal('hide');
+  }
+
   // onProgress(event: any) {
   //   const task = this.tasks.at(this.tasks.length - 1) as FormGroup;
   //   if (task.get('progress')?.value != 2) {
@@ -183,4 +197,7 @@ export class TodoComponent implements OnInit {
       this.alertMessage = null;
     }, 5000);
   }
+
+  
+
 }
