@@ -3,7 +3,6 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskService } from '../task.service';
 import { map, Observable, Subject, tap } from 'rxjs';
-import * as Highcharts from 'highcharts';
 import { Chart, ChartModule } from 'angular-highcharts';
 import { DataService } from '../data.service';
 

@@ -14,7 +14,7 @@ import {
   ɵɵdefineNgModule,
   ɵɵdirectiveInject,
   ɵɵinject
-} from "./chunk-HN46OFG7.js";
+} from "./chunk-BGIKGNYS.js";
 import {
   AsyncSubject,
   __commonJS,
@@ -22,7 +22,7 @@ import {
   __spreadProps,
   __spreadValues,
   __toESM
-} from "./chunk-UMJIKOVD.js";
+} from "./chunk-DNTYUIWZ.js";
 
 // node_modules/highcharts/highcharts.js
 var require_highcharts = __commonJS({
